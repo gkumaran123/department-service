@@ -1,0 +1,26 @@
+apply plugin: 'org.sonarqube'
+apply plugin: 'java'
+   
+def mergedCoverageReport = "${buildDir}/jacoco/jacoco-merged.exec"
+
+sonarqube {
+	properties {    
+		property "sonar.host.url", System.getProperty('sonar.host.url')
+                property "sonar.projectName", System.getProperty('sonar.projectName')
+                property "sonar.projectKey", System.getProperty('sonar.projectKey')
+		property "sonar.jacoco.reportPath", mergedCoverageReport
+		property "sonar.sources", "src/main/java"	
+		property "sonar.tests", "src/test/java"
+		property "sonar.exclusions", "file:**/config/*.java,**/domain/*.java,**/model/*.java,**/constants/*.java,**/message/*.java,**/entities/*.java,**/buildability/*.java,**/client/*.java,**/s3/*.java,**/cfg/*.java,**/authorization/*.java,**/util/*.java,**/timingpointimpact/*.java,**/filter/*.java,**/coofec/*.java,**/test/**"
+	}
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+
+plugins.withType(JacocoPlugin) {
+  tasks["test"].finalizedBy 'jacocoTestReport'
+}
